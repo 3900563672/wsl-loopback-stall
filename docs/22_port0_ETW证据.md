@@ -26,10 +26,10 @@ logman stop pt2 -ets
 tracerpt pt2.etl -of XML -o pt2.xml -summary pt2-summary.txt -lr
 ```
 
-探针（WSL guest 侧）：/root/research/exp2/port0_mix.go 预编译为 /tmp/port0_mix_bin，循环最多 8 轮，每轮 40 次交替 bind(0)/bind(显式)（sleep 1.5s 后自连），出现 FAIL 即停：
+探针（WSL guest 侧）：local/port0/port0_mix.go 预编译为 port0_mix_bin，循环最多 8 轮，每轮 40 次交替 bind(0)/bind(显式)（sleep 1.5s 后自连），出现 FAIL 即停：
 
 ```bash
-for i in 1 2 3 4 5 6 7 8; do /tmp/port0_mix_bin >> mix.log 2>&1; if grep -q FAIL mix.log; then break; fi; done
+for i in 1 2 3 4 5 6 7 8; do port0_mix_bin >> mix.log 2>&1; if grep -q FAIL mix.log; then break; fi; done
 ```
 
 ## 四、抓包结果（2026-08-19 11:05:12–11:06:12，62 秒）

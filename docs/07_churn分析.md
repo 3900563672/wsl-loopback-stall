@@ -47,7 +47,7 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 
 ### 验证结果（2026-08-19，#72 缓存预热对照，日志 `logs/cache-warm-072.txt`）
 
-- 环境：WSL 2.7.8.0 / 健康态（200 轮直方图归档后）；固定端口，不受 fresh-port 退化窗口影响；`go run research/exp/cache_warm.go`（128 并发，阶段 2/3 各 512 次 bind，全部成功）。
+- 环境：WSL 2.7.8.0 / 健康态（200 轮直方图归档后）；固定端口，不受 fresh-port 退化窗口影响；`go run local/exp/cache_warm.go`（128 并发，阶段 2/3 各 512 次 bind，全部成功）。
 - phase2 缓存命中（预热 100 端口 → 100% 命中缓存）：p50=1.32s / p95=1.36s / p99=1.37s / 吞吐 95 bind/s。
 - phase3 未缓存对照（全新端口）：p50=1.39s / p95=1.42s / p99=1.42s / 吞吐 91 bind/s。
 - **结论**：缓存命中（不经 Windows 排他锁）与未缓存路径几乎无差，且均 ≈ 128×10.4ms 积压模型 → 瓶颈确认在 guest 侧 seccomp 通知处理链（`GnsPortTracker::Run` 单线程队列），**Windows ConsommeNetworking 排他锁不是主瓶颈**，本假设证实。
@@ -56,7 +56,7 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 
 - 744/6400 已定位：guest 侧端口缓存（m_allocatedPorts，60s 超时）命中跳过 Windows 请求，非 Windows 端点缓存。
 - 该机制是**设计预期**（避免重复端口重复注册），不是 bug；对结论无负面影响。
-- 对外表述中"全局排他锁 + 同步链积压"宏观成立；内部机制描述建议补充 seccomp 通知处理链这一串行点（12 号文档）。
+- 结论："全局排他锁 + 同步链积压"宏观成立；机制描述补充 seccomp 通知处理链这一串行点（12 号文档）。
 
 ## 参考
 

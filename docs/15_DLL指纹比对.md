@@ -54,5 +54,5 @@
 
 ## 六、材料
 
-- 脚本：/root/research/full-fingerprint.sh（可复用，改 DLL 路径与候选 commit 即可）
-- 数据：/tmp/dll_lines.txt（DLL 行号集合）
+- 脚本：local/full-fingerprint.sh（可复用，改 DLL 路径与候选 commit 即可）
+- 数据：local/dll_lines.txt（DLL 行号集合）

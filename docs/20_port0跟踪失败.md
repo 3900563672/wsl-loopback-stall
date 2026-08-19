@@ -3,7 +3,7 @@
 # 20 端口 0 跟踪失败率实验：2.7.8.0 上 ephemeral bind 注册约一半概率失效（#40187 未修复实证）
 
 > 日期：2026-08-19 ｜ 类型：健康态实验（无管理员权限，guest 侧）｜ 状态：完成
-> 探针：/root/research/exp2/（port0_tracking.go / port0_seq_detail.go / port0_delay.go / port0_hold.go / port_explicit.go）
+> 探针：local/port0/（port0_tracking.go / port0_seq_detail.go / port0_delay.go / port0_hold.go / port_explicit.go）
 
 ## 背景
 
@@ -49,7 +49,7 @@
 - microsoft/WSL #40109（场景）、#40187（修复，04-22，2.7.8.0 不含）
 - 07_churn分析.md（需按本文修正主因表述）
 - 17 号文档（版本缺陷区间）
-- 探针源码：/root/research/exp2/
+- 探针源码：local/port0/
 
 ## 八、勘误（16 号文档，2026-08-19）
 

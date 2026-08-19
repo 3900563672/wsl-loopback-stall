@@ -95,7 +95,7 @@ oss\vm\devices\virtio\virtio_net\src\lib.rs、oss\vm\devices\virtio\virtio_net\s
 
 ## 3. 导出签名比对
 
-- `wsldevicehost.dll` 导出表：**0 项**；`wslrelay.exe` 导出表：**0 项**（PE 解析脚本 `research/pe_export.py`，逐名字解析）。
+- `wsldevicehost.dll` 导出表：**0 项**；`wslrelay.exe` 导出表：**0 项**（PE 解析脚本 `local/pe_export.py`，逐名字解析）。
 - 两二进制均无命名导出 → DLL 经 COM/注册表（dllhost 承载）加载，不按名链接 → **"导出签名"维度不适用**，字符串签名是正确且充分的手段。此结论已写入 issue #61 正文口径。
 
 ## 4. 版本漂移与局限（诚实声明）
@@ -116,17 +116,17 @@ Get-Process -Name dllhost | Select -Expand Modules | Where FileName -match 'wsld
 
 # 字符串（WSL 内）
 cd '/mnt/c/Program Files/WSL'
-strings -a -n 4 wsldevicehost.dll > /tmp/dll_ascii.txt
-strings -a -n 4 -e l wsldevicehost.dll > /tmp/dll_utf16.txt
-grep -i -E 'net_consomme|Duplicate TCP bind|PortNotBound|proxy_for_guest_port|FinWait2|wsldevicehost' /tmp/dll_ascii.txt
+strings -a -n 4 wsldevicehost.dll > local/dll_ascii.txt
+strings -a -n 4 -e l wsldevicehost.dll > local/dll_utf16.txt
+grep -i -E 'net_consomme|Duplicate TCP bind|PortNotBound|proxy_for_guest_port|FinWait2|wsldevicehost' local/dll_ascii.txt
 
-# 导出表（research/pe_export.py）
-python3 /mnt/c/Users/hh/OneDrive/research/pe_export.py '/mnt/c/Program Files/WSL/wsldevicehost.dll'
+# 导出表（local/pe_export.py）
+python3 ~/research/wsl-loopback/pe_export.py '/mnt/c/Program Files/WSL/wsldevicehost.dll'
 ```
 
 ## 6. 对结论的意义
 
 1. **12 号文档"剩余不确定①：wsldevicehost.dll 内联 net_consomme 与 openvmm master 的版本差异"** → 前半句（内联）已确认，只剩版本差异细节；
-2. 此前对外表述中"Consomme 由 wsldevicehost.dll 承载"从推断升级为**已确认事实**（字符串 + 进程加载 + WPR provider 三证合一）；
-3. 对外表述可直接引用本文证据表回答"凭什么说这个 DLL 包含开源栈"；
+2. "Consomme 由 wsldevicehost.dll 承载"从推断升级为**已确认事实**（字符串 + 进程加载 + WPR provider 三证合一）；
+3. 本文证据表直接回答"凭什么说这个 DLL 包含开源栈"；
 4. 边界不变：**这仍不构成根因证明**（issue #61 只回答"代码对应关系"，不回答"为什么卡"）。
