@@ -121,7 +121,7 @@ strings -a -n 4 -e l wsldevicehost.dll > local/dll_utf16.txt
 grep -i -E 'net_consomme|Duplicate TCP bind|PortNotBound|proxy_for_guest_port|FinWait2|wsldevicehost' local/dll_ascii.txt
 
 # 导出表（local/pe_export.py）
-python3 ~/research/wsl-loopback/pe_export.py '/mnt/c/Program Files/WSL/wsldevicehost.dll'
+python3 <本机路径>/pe_export.py 'C:\Program Files\WSL\wsldevicehost.dll'
 ```
 
 ## 6. 对结论的意义

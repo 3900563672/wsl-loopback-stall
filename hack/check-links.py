@@ -12,7 +12,7 @@ for p in [ROOT / "README.md", *sorted((ROOT / "docs").rglob("*.md")), ROOT / "ar
     text = p.read_text(encoding="utf-8")
     for m in LINK_RE.findall(text) + CODE_RE.findall(text):
         target = m.split("#")[0].strip()
-        if not target or target.startswith(SKIP) or target.startswith(("源仓库", "上游")):
+        if not target or target.startswith(SKIP) or target.startswith(("早期", "上游")):
             continue
         cand = (p.parent / target).resolve()
         if not cand.exists():

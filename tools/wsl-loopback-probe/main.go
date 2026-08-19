@@ -59,7 +59,7 @@ func main() {
 		*attempts, latencyOK, *attempts, windowsOK, *attempts, relayErrorText(relayErrors), hasCurl)
 	switch {
 	case hasCurl && windowsOK == 0:
-		fmt.Println("[wsl-loopback] RESULT: FAIL Windows 侧新端口全部不可达（注册链路失效），建议 wsl --shutdown 后复测（需用户同意）")
+		fmt.Println("[wsl-loopback] RESULT: FAIL Windows 侧新端口全部不可达（注册链路失效），建议 wsl --shutdown 后复测（执行前确认无其他运行任务）")
 	case !hasCurl && latencyOK < *attempts:
 		fmt.Println("[wsl-loopback] RESULT: FAIL WSL 内注册延迟超过 2s（无 curl.exe，仅本地判据）")
 	case windowsOK > 0 && windowsOK < *attempts:
