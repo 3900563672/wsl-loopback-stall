@@ -1,0 +1,23 @@
+# Agent 文档层 Markdown 规范（markdownlint-cli2）
+config:
+  MD013: false
+  MD001: false
+  MD022: false
+  MD032: false
+  MD041: false
+  MD029: false
+  MD060: false
+  MD012: true
+  MD024: true
+  MD025: true
+  MD028: true
+  MD031: true
+  MD034: true
+  MD037: true
+  MD038: true
+  MD047: true
+  MD056: true
+globs:
+  - "README.md"
+  - "docs/**/*.md"
+  - "archive/README.md"

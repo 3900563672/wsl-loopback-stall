@@ -100,9 +100,8 @@
 
 - openvmm：304657e9（初始导入）、0bb5cf75（本机 DLL 锚点）、4a73bb30（#3364 create_bound_socket）、5c773aaf（#3668 族冲突）、dc6bfc6b（#3620 动态 host 端口）
 - microsoft/WSL：ef8e1c8d（#14333）、3f00f988（#40187）、ee92475a（#40287）、96b220c7（#41125）、55d45784（#41051）、697572d6（初始开源）
-- 22_dll指纹比对.md（0bb5cf75 锚定）、27_history_timeline_and_listen_only.md（勘误见第五节）、28/29/30 号（端口 0 证据链）
+- 19_DLL指纹比对.md（0bb5cf75 锚定）、35_时间线与观察窗口.md（勘误见第五节）、24/25/26 号（端口 0 证据链）
 - 探针：/root/research/exp2/port0_*.go
-
 
 ---
 

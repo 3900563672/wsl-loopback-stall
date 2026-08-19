@@ -28,7 +28,7 @@
 
 ### 2.1 net_consomme 源码路径（`net_consomme` 共命中 96 次）
 
-```
+```text
 oss\vm\devices\net\net_consomme\consomme\src\tcp.rs
 oss\vm\devices\net\net_consomme\consomme\src\udp.rs
 oss\vm\devices\net\net_consomme\consomme\src\lib.rs
@@ -56,7 +56,7 @@ oss\vm\devices\net\net_consomme\src\lib.rs
 
 ### 2.3 WPP 事件名（带源码行号，微软可解码）
 
-```
+```text
 consomme::tcp::message_error（tcp.rs:354 等数十个行号）
 consomme::udp::message_dropped_ratelimited_error（udp.rs:466/472/480 等）
 net_consomme::message_err（net_consomme/src/lib.rs:288/363/372/530）
@@ -68,7 +68,7 @@ consomme::dhcpv6::message_error / consomme::ndp::message_error / consomme::icmp 
 
 ### 2.4 Rust 工具链与构建来源（额外收获，来源证据极强）
 
-```
+```text
 /rustc/13948834cf6ba6943cbddc752b86e5b9e3585c03/library/core/src/...
 C:\__w\_temp\msrustup_home\packages\rust.tools.stable-llvm-x86_64-pc-windows-msvc.1.94.0-ms-20260303.10037\tools\lib/rustlib/src/rust\library\alloc\src\...
 C:\__w\_temp\cargo_home\registry\src\microsoft.pkgs.visualstudio.com-8dd33d26ad55b096\anyhow-1.0.99\src\...
@@ -83,7 +83,7 @@ C:\__w\_temp\cargo_home\registry\src\microsoft.pkgs.visualstudio.com-8dd33d26ad5
 
 ### 2.5 宿主 glue 与 virtio（同库内还内嵌其他 openvmm crate）
 
-```
+```text
 hyper-v\wsldevicehost\src\virtio_net.rs、hyper-v\wsldevicehost\src\virtiofs.rs   ← 设备宿主 crate（wsldevicehost 本体）
 oss\vm\devices\virtio\virtio_net\src\lib.rs、oss\vm\devices\virtio\virtio_net\src\buffers.rs  ← openvmm virtio_net 也内嵌
 ```

@@ -1,3 +1,4 @@
+<!-- markdownlint-disable MD018 MD036 MD012 MD047 MD010 MD033 -->
 **Windows Version**
 
 `Microsoft Windows [Version 10.0.26200.9168]` (Windows 11 Pro).
@@ -63,21 +64,13 @@ func main() {
 }
 ```
 
-
-
 2. Observe: round 1 connects in ~50 ms; from round 2 the port is unreachable for the full per-round deadline in most runs. On 2026-08-18 this hit 5/5 runs from a healthy baseline (30 s deadlines); with a 90 s deadline the worst run showed rounds 2 and 4-8 never becoming reachable while rounds 1 and 3 succeeded at ~52 ms.
 
-
-
 3. The same loop with `-rounds 200 -timeout 30s` was used for the 200-round run reported in Actual Behavior; the full probe (with Windows-side verification and fixed-port mode) is available on request.
-
-
 
 **Expected Behavior**
 
 Every fresh ephemeral loopback listener registers and connects within ~50-100 ms, every round, with no degradation within a run. Explicit ports and ephemeral ports behave identically.
-
-
 
 **Actual Behavior**
 
@@ -95,8 +88,6 @@ Local development services that bind ephemeral loopback ports inside WSL (langua
 
 Use fixed ports: explicit (127.0.0.1:<port>) binds register synchronously and never stalled in 29/29 rounds on this machine.
 
-
-
 **Diagnostic Logs**
 
 - Full WPR networking trace captured with the official `collect-wsl-logs.ps1 -LogProfile networking` (2026-08-18, ~102 MB, includes a repro run inside the capture window: rounds 1-3 half-blackhole, rounds 4-8 full registration stall).
@@ -110,9 +101,8 @@ Use fixed ports: explicit (127.0.0.1:<port>) binds register synchronously and ne
 2. Is disabling SYN retransmission (SIO_TCP_INITIAL_RTO) on Consomme sockets intended, given a dropped SYN then has no backstop?
 3. The registration failures are consistent with running in the range missing #41051/#41125 (first shipped in 2.9.5), but the self-amplifying degradation (91.5 % stall rate, monotonically worsening) is not obviously explained by those two fixes - is this worth a separate look? I can re-run the full battery on 2.9.5 once it reaches the Store.
 
-
-
 **Related issues checked before filing**
 
 #40109 (bind(0) -> EADDRINUSE), #40187 (port-0 inline resolution), #41039/#41051 (non-main-thread tracking), #41117/#41125 (listen autobind), #40803 (IPv6 port-retention leak), #41162 (mirrored UDP retention), #40597/#41085 (mirrored-mode host ephemeral-range deny/cap - same 2.9.5 boundary, different (mirrored) path), openvmm issue #2313 (TCP retry/timeout acknowledged backlog). None covers this combination (Consomme + TCP loopback + ephemeral churn + registration chain).
 
+<!-- markdownlint-enable -->

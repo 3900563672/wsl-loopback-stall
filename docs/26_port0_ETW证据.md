@@ -1,7 +1,7 @@
 # 30 端口 0 注册丢失的 Windows 侧 ETW 实证：请求从未到达 wsl_devicehost（29 号待办① 闭环）
 
 > 日期：2026-08-19 ｜ 类型：健康态抓包（需管理员权限，已完成）｜ 状态：完成
-> 对应：29_port0_registration_windows.md 待办①（GNS/wsldevicehost ETW 抓包定位注册丢失点）
+> 对应：25_port0注册窗口.md 待办①（GNS/wsldevicehost ETW 抓包定位注册丢失点）
 > 证据目录：logs/evidence/port0-etw-2026-08-19/
 
 ## 一、目标与方法
@@ -74,7 +74,7 @@ for i in 1 2 3 4 5 6 7 8; do /tmp/port0_mix_bin >> mix.log 2>&1; if grep -q FAIL
 
 ## 参考
 
-- 29_port0_registration_windows.md（待办① 已完成）
-- 28_port0_tracking_failure.md（机制修正见第五节）
+- 25_port0注册窗口.md（待办① 已完成）
+- 24_port0跟踪失败.md（机制修正见第五节）
 - 18_实验复现手册.md（tracerpt -of XML 命令出处）
 - 官方 wsl.wprp（wsl_devicehost provider 定义第 270 行）

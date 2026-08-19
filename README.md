@@ -1,6 +1,14 @@
+<!-- markdownlint-disable MD033 -->
 # WSL2 Loopback Stall Case Study
 
 WSL2（Consomme 网络模式）下 **IPv4 回环 + 临时端口 churn 引发的连接停滞（stall）**：完整复现、根因定位、证据链与上游互动记录。
+
+<div align="center">
+
+[![Docs](https://github.com/3900563672/wsl-loopback-stall/actions/workflows/docs.yml/badge.svg)](https://github.com/3900563672/wsl-loopback-stall/actions/workflows/docs.yml)
+[![License](https://img.shields.io/github/license/3900563672/wsl-loopback-stall)](https://github.com/3900563672/wsl-loopback-stall/blob/main/LICENSE)
+
+</div>
 
 ## TL;DR
 
@@ -55,19 +63,26 @@ Documents/ 面试专用材料（本地维护，gitignore，永不推送）
 | 投稿与互动 | 27–36 | 评论草稿与发送、issue 正文 v5、发布校验、时间线、弹药清单 |
 | 预案 | 37–39 | 官方三种回应的处置预案 |
 
-## 复现指引
+## 快速开始
 
-环境：Windows 11 + WSL2（Ubuntu，Consomme 网络模式）。完整步骤见 `docs/07_复现手册.md`，恢复与回滚见 `docs/13_回滚与恢复指南.md`。
+环境：Windows 11 + WSL2（Ubuntu，Consomme 网络模式）。
 
 ```bash
-# 探针（Go）
-cd tools/wsl-loopback-probe && go run . 
-# 观察脚本
+# 1. 探针：复现"新端口首连被拒 / churn STALL"（Go 1.21+）
+cd tools/wsl-loopback-probe
+go run .
+
+# 2. 复现手册（含每项实验的预期与耗时）
+#    docs/07_复现手册.md
+# 3. 官方回应观察脚本（至观察窗口结束）
 ./tools/watch-41286.sh
 ```
 
+> 环境恢复与回滚步骤见 `docs/12_系统恢复操作步骤.md`、`docs/13_回滚与恢复指南.md`；大体积原始证据（ETL/抓包）清单见 `evidence/manifest.md`。
+
 ## 说明与限制
 
-- 本仓库为**研究记录与证据归档**，不包含业务代码。
+- 本仓库为**研究记录与证据归档**：现象、实验、源码分析、官方互动全链路，可独立复现。
 - 大体积原始证据（ETL 抓包、WPR 日志）不入 git，清单见 `evidence/manifest.md`。
 - 迁移自源仓库的完整 commit 历史见 `archive/prs/commit-index.md`。
+- 文档编号全局唯一（`docs/` 01–39），主题分段见上文；`archive/` 为过程归档不参与主编号。

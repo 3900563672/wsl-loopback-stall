@@ -1,0 +1,21 @@
+name: Docs Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Markdown lint
+        run: |
+          npm install -g markdownlint-cli2
+          markdownlint-cli2 "README.md" "docs/**/*.md" "archive/README.md"
+      - name: Link check
+        run: python3 hack/check-links.py
