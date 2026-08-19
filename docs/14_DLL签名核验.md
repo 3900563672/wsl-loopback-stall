@@ -1,4 +1,4 @@
-# 17_wsldevicehost.dll 与开源 net_consomme 对应关系核验（issue #61）
+# 14 wsldevicehost.dll 与开源 net_consomme 对应关系核验（issue #61）
 
 > 日期：2026-08-19 凌晨 ｜ 状态：**完成——结论"可能包含相同代码"升级为"已确认包含"** ｜ 全部操作只读，未动系统
 
@@ -124,9 +124,9 @@ grep -i -E 'net_consomme|Duplicate TCP bind|PortNotBound|proxy_for_guest_port|Fi
 python3 /mnt/c/Users/hh/OneDrive/research/pe_export.py '/mnt/c/Program Files/WSL/wsldevicehost.dll'
 ```
 
-## 6. 对 issue 流程的意义
+## 6. 对结论的意义
 
 1. **12 号文档"剩余不确定①：wsldevicehost.dll 内联 net_consomme 与 openvmm master 的版本差异"** → 前半句（内联）已确认，只剩版本差异细节；
-2. v3 评论中"Consomme 由 wsldevicehost.dll 承载"从推断升级为**已确认事实**（字符串 + 进程加载 + WPR provider 三证合一）；
-3. 若官方追问"你凭什么说这个 DLL 包含开源栈"→ 直接引用本文证据表；
+2. 此前对外表述中"Consomme 由 wsldevicehost.dll 承载"从推断升级为**已确认事实**（字符串 + 进程加载 + WPR provider 三证合一）；
+3. 对外表述可直接引用本文证据表回答"凭什么说这个 DLL 包含开源栈"；
 4. 边界不变：**这仍不构成根因证明**（issue #61 只回答"代码对应关系"，不回答"为什么卡"）。

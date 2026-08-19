@@ -1,4 +1,4 @@
-# 26 churn 窗口 744/6400 差异分析（BindEndpoint 事件计数之谜，已定位）
+# 07 churn 窗口 744/6400 差异分析（BindEndpoint 事件计数之谜，已定位）
 
 > 日期：2026-08-19 ｜ 类型：只读源码分析 ｜ 状态：已定位（机制级）
 > 数据来源：23_参数验证实验结果.md 实验 5c（WSL 侧 6400 次 bind vs Windows 侧 BindEndpoint(WFP) 事件仅 744 个）
@@ -40,7 +40,7 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 
 ## 顺带发现：延迟模型的串行点需要修正/补证
 
-- 128 并发下 88.4% 的 bind **不经过** Windows `ConsommeNetworking::ModifyOpenPorts` 排他锁（`m_lock.lock_exclusive()`），但实测 p50=1.322s 仍精确等于 128×10.4ms（23 号文档实验 4）。
+- 128 并发下 88.4% 的 bind **不经过** Windows `ConsommeNetworking::ModifyOpenPorts` 排他锁（`m_lock.lock_exclusive()`），但实测 p50=1.322s 仍精确等于 128×10.4ms（04 号文档实验 4）。
 - 说明 128 并发下的积压串行点**不是（或不只是）Windows 排他锁**，而是更前端的 seccomp 通知单线程处理队列（GnsPortTracker::Run 的 for 循环：ReadNextRequest → GetCallInfo[读进程内存 + pidfd_getfd + ValidateCookie] → CompleteRequest）。
 - 8 并发（实验 1）新端口占比高，Windows 锁排队占主导；128 并发（实验 4）新端口占比低，但每个通知处理仍串行 ~10.4ms——两者恰好都是"并发 × 10.4ms"，宏观结论（延迟=并发×10.4ms、吞吐恒定 ~96 bind/s）不变，但"全局排他锁"作为唯一瓶颈的解释需要修正。
 - **建议对照实验（健康态可做，无管理员权限）**：✅ **已验证（2026-08-19，结果见下）** 先预热固定端口集合到缓存（如 100 个端口各 bind 一次），再用 128 并发重复 bind 这 100 个端口（100% 命中缓存）测延迟。若延迟仍 ≈ 并发×10.4ms → 瓶颈确认在 seccomp 通知处理链（guest 侧）；若延迟骤降 → Windows 锁仍是主瓶颈。
@@ -55,8 +55,8 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 ## 结论
 
 - 744/6400 已定位：guest 侧端口缓存（m_allocatedPorts，60s 超时）命中跳过 Windows 请求，非 Windows 端点缓存。
-- 该机制是**设计预期**（避免重复端口重复注册），不是 bug；对投稿结论无负面影响。
-- 24 号评论 v4 中"全局排他锁 + 同步链积压"表述可保留（宏观成立），但内部机制描述建议在后续补充中提及 seccomp 通知处理链这一串行点。
+- 该机制是**设计预期**（避免重复端口重复注册），不是 bug；对结论无负面影响。
+- 对外表述中"全局排他锁 + 同步链积压"宏观成立；内部机制描述建议补充 seccomp 通知处理链这一串行点（12 号文档）。
 
 ## 参考
 
@@ -69,7 +69,7 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 
 ## 版本声明与时间线修正（2026-08-19 补充，重要）
 
-**引用版本**：本文引用的 `GnsPortTracker.cpp` 为 microsoft/WSL GitHub **master**（2026-08-19 拉取，还原源码），**不是本机 2.7.8.0 DLL 的反编译**。本机 wsldevicehost.dll 构建于 2026-04-20（17 号文档），WSL 版本 2.7.8.0（发布 2026-06-06）。
+**引用版本**：本文引用的 `GnsPortTracker.cpp` 为 microsoft/WSL GitHub **master**（2026-08-19 拉取，还原源码），**不是本机 2.7.8.0 DLL 的反编译**。本机 wsldevicehost.dll 构建于 2026-04-20（14 号文档），WSL 版本 2.7.8.0（发布 2026-06-06）。
 
 **GnsPortTracker 演进时间线（WSL 开源仓库）**：
 
@@ -81,12 +81,12 @@ int GnsPortTracker::HandleRequest(const PortAllocation& Port)
 | #41125 | 2026-07-24 | listen() 隐式 autobind 拦截（#41117） | ❌ 不含 |
 | #41051 | 2026-08-05 | 端口 0 跟踪在线程下失效（#41039，PIDFD_THREAD） | ❌ 不含 |
 
-**对 744/6400 解读的影响（2026-08-19 二次修正，见 28 号文档）**：
+**对 744/6400 解读的影响（2026-08-19 二次修正，见 20 号文档）**：
 - **主因不是缓存命中，而是注册竞态失败**：2.7.8.0（DLL 04-20 构建）不含 #40187（04-22 合并，端口 0 解析 dup socket 异步 → inline 修复）。实测：端口 0 注册成功率单线程 ~43%、128 并发 2.3%；显式端口 100%。
 - 6400 次 bind 中大量从未发起 RequestPort（注册丢失）→ 不产生 BindEndpoint 事件；缓存命中机制（HandleRequest contains）存在但量级上次要。
 - #41051（线程 bug，08-05）亦未含，叠加使并发场景塌缩到 2.3%。
 - 744 个事件 ≈ churn 期间成功注册数；"每端口 8.6 次复用"的推断不再适用。
 
-**对投稿叙事的意义**：
-- 官方在 #41039/#41125 已承认并修复（7-24/8-05）"端口 0 线程跟踪失效"和"listen-only 不可达"，**2.7.8.0 同时缺这两个修复**——我们的实验环境正好踩中官方已知缺陷区间，可作为"版本行为差异"的补充证据（需在 2.7.8.0 上实测 listen-only 场景佐证，见 27 号文档）。
-- 24 号评论 v4 未引用 GnsPortTracker 版本敏感代码（仅一句存在性描述），无证据误用；net_consomme 引用已锚定 0bb5cf75。
+**对结论的意义**：
+- 官方在 #41039/#41125 已承认并修复（7-24/8-05）"端口 0 线程跟踪失效"和"listen-only 不可达"，**2.7.8.0 同时缺这两个修复**——我们的实验环境正好踩中官方已知缺陷区间，可作为"版本行为差异"的补充证据（需在 2.7.8.0 上实测 listen-only 场景佐证，见 20 号文档）。
+- 对外评论（#41286）未引用 GnsPortTracker 版本敏感代码（仅一句存在性描述），无证据误用；net_consomme 引用已锚定 0bb5cf75。

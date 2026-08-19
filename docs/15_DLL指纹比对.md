@@ -1,4 +1,4 @@
-# 22 DLL ↔ openvmm 版本指纹比对结果（issue #65 完成）
+# 15 DLL ↔ openvmm 版本指纹比对结果（issue #65 完成）
 
 > 日期：2026-08-19 ｜ 方法：DLL 字符串 WPP 行号集合 vs openvmm 候选 commit 的 tracing/tracelimit 宏命中率
 
@@ -35,7 +35,7 @@
 - lib.rs 的 48 个行号为多 crate 混合（net_consomme/src/lib.rs + consomme/src/lib.rs + 其他依赖 crate 的 lib.rs 均可能），两个候选 lib.rs 合计命中 7/48，不用于定版；tcp/udp/dns_tcp 已覆盖核心结论（TimeWait、注册、黑洞机制均在 tcp.rs）
 - udp.rs 是区分 0bb5cf75 与 4b326a12 的关键：0bb5cf75 为 USO 支持（改动 udp.rs），DLL 的 udp 行号匹配 0bb5cf75 而非 4b326a12
 
-## 四、关键机制在锚定版本的确认（20 号文档结论适用性）
+## 四、关键机制在锚定版本的确认（16 号文档结论适用性）
 
 | 机制 | 0bb5cf75 存在 |
 | --- | --- |
@@ -44,7 +44,7 @@
 | connect 超时静默不发 RST（"Avoid resetting so that the guest"） | ✓（tcp.rs） |
 | SO_REUSEADDR | ✗ 不存在（与 HEAD 一致，无此设置） |
 
-结论：20 号文档基于 HEAD 的机制分析全部适用于 DLL 内嵌版本（tcp/udp/dns_tcp 部分）。
+结论：16 号文档基于 HEAD 的机制分析全部适用于 DLL 内嵌版本（tcp/udp/dns_tcp 部分）。
 
 ## 五、局限
 
