@@ -1,0 +1,58 @@
+> ⚠️ **勘误声明（2026-08-19）**：本文中「#40187 归属 / 2.7.8.0 是否含修复 / 首发版本线」的表述已被 [31 号文档](31_openvmm_history_trace.md) 修正——#40187 属 guest 侧 GnsPortTracker（2.7.8.0 已含），#41125/#41051 首发 2.9.5（2.7.8.0 不含），本文相关表述作废，以 31 号为准。
+
+# 28 端口 0 跟踪失败率实验：2.7.8.0 上 ephemeral bind 注册约一半概率失效（#40187 未修复实证）
+
+> 日期：2026-08-19 ｜ 类型：健康态实验（无管理员权限，guest 侧）｜ 状态：完成
+> 探针：/root/research/exp2/（port0_tracking.go / port0_seq_detail.go / port0_delay.go / port0_hold.go / port_explicit.go）
+
+## 背景
+
+26 号文档分析 744/6400 差异时假设"guest 缓存命中跳过 Windows 请求"为主因。本实验发现更根本的机制：**2.7.8.0 的端口 0（ephemeral）跟踪注册本身约一半概率失败**。
+
+## 实验与结果
+
+| 实验 | 场景 | 结果 |
+| --- | --- | --- |
+| A | 显式随机端口 128 并发，bind 后保持，guest 自连 | **128/128 可达（100%）** |
+| B | 显式随机端口 单线程 200 | 198/200 可达 |
+| C | 端口 0 单线程 200，bind 后保持 20s，自连 | 63/200（31.5%） |
+| D | 端口 0 128 并发，保持，自连 | 3/128（2.3%） |
+| E | 端口 0 单线程，**立即自连**（bind→dial→close） | 0/50（0%） |
+| F | 端口 0 单线程，**sleep 2s 后自连** | 13/30（43.3%） |
+| G | 端口 0 保持 30s，Windows 侧 Test-NetConnection | 失败端口 Windows 侧同样不可达 |
+
+## 结论
+
+1. **注册是异步的**：端口 0 的 bind 放行后，wsldevicehost 才异步 getsockname + RequestPort（E 实验 0% 是竞态：自连早于注册完成）。
+   > **修正（30 号文档，2026-08-19 ETW 实证）**：故障窗口内注册请求从未到达 wsl_devicehost（host 侧 0 个 port request 事件），丢失点位于 guest→host 消息路径（guest 未发或传输丢失），不是 host 侧异步解析失败。
+2. **即使 socket 保持 2s，注册成功率仅 ~43%**（F 实验）——注册本身有约一半概率从未发生（不是自连太早，是注册丢失/失败）。
+3. **失败 = 端口从未注册**：guest 内部与 Windows 侧均 refused（G 实验），区别于"注册了但连接路径坏"。
+4. **显式端口不受影响**（A/B 100%）——问题特定于端口 0（ResolvePortZeroBind 路径）。
+5. 128 并发下成功率进一步塌缩到 2.3%（线程 + 并发竞态叠加）。
+
+## 与官方问题的对应（关键）
+
+- 官方 #40109（WSL 2.7.1）：VSCode Remote-SSH 场景，`bind(0)` → resolved_port → 再显式 bind 同端口 → **EADDRINUSE(-98)**。
+- 官方 #40187（2026-04-22 合并）：修复方式 = **把端口 0 解析从"dup socket 异步"改为"inline 同步"**（"To avoid duplicating the socket and causing race conditions. With the trade off of even slower bind calls."）。
+- **本机 2.7.8.0 的 wsldevicehost.dll 构建于 2026-04-20，不含 #40187** → 仍使用存在竞态的 dup socket 异步解析 → 与官方描述同源。
+- #41051（2026-08-05，PIDFD_THREAD）也未含——128 并发塌缩到 2.3% 与此一致。
+
+## 对既有结论的修正
+
+1. **26 号文档的 744/6400 解读需二次修正**：BindEndpoint 事件数低的主因是**注册竞态失败（#40187 缺失），而非（仅）guest 缓存命中**；缓存命中机制存在，但量级上注册失败占主导。744 个事件 ≈ 成功注册数（churn 中 6400 次 bind 大量从未发起 RequestPort）。
+2. **实验 4（churn_heavy）的"秒级停滞"测量对象修正**：那些 bind(0) 端口大部分从未注册——停滞是 seccomp 通知队列延迟（真实存在），但"绑定端口可用性"与延迟无关，需分开表述。
+3. **退化态观察的补充解释**：bind(0) 类应用（VSCode remote、动态端口服务）在 2.7.8.0 上即使健康态也有一半概率端口不可达——退化态的"注册不再物化"部分由此机制叠加放大。
+4. **投稿叙事**：这不是新 bug 主张（官方 #40109/#40187 已知并已修），而是"2.7.8.0 处于官方已知缺陷区间（缺 #40187/#41125/#41051）"的实证，用于版本代表性说明；健康态下"ephemeral 端口注册 ~57% 失败"可量化为该缺陷区间的可复现证据。
+
+## 参考
+
+- microsoft/WSL #40109（场景）、#40187（修复，04-22，2.7.8.0 不含）
+- 26_churn_744_6400_analysis.md（需按本文修正主因表述）
+- 27_history_timeline_and_listen_only.md（版本缺陷区间）
+- 探针源码：/root/research/exp2/
+
+## 八、勘误（31 号文档，2026-08-19）
+
+- 结论 1/2 与“与官方问题的对应”第 2 条的机制归因修正：**#40187 在 2.7.8.0 的 guest 侧 tracker 中已存在**（inline 解析，2.7.8 tag 含 3f00f988）；“本机 wsldevicehost.dll 不含 #40187 → 仍使用 dup socket 异步解析”不成立（#40187 不在 host DLL 中）。
+- 与 ETW 证据（30 号：host 侧 0 个 port request 事件）直接对应的缺失修复是 **#41051（PIDFD_THREAD，2026-08-05，2.9.5 首发）**：2.7.8 的 DuplicateSocketFd 用 `pidfd_open(Pid, 0)`，非主线程 bind(0) 失败 → 注册请求从未发出。Go 探针 bind 跑在 runtime 非主线程，机制自洽（详见 31 号文档）。
+- 结论 4/5（显式端口免疫、并发塌缩叠加）与全部实测数据不变；窗口式成因仍未完全解释，保留待 guest 侧 tracing。
