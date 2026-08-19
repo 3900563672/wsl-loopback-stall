@@ -14,15 +14,15 @@ d601fdf fix: WSL 回环探针重写为单轮语义（健康对照推翻旧探针
 c5e7733 fix: 探针 curl 命令行拆分（修复 CI lint lll 超长行）
 570e28b docs: WSL 回环案例研究沉淀（阶段五至十） (#59)
 0c1c93c docs: WSL 回环研究三 issue 闭环（查重/指纹/参数实验） (#67)
-d5839fe docs: WSL 回环 follow-up 评论正文修订（#41286）
-c710e2c docs: WSL 31/32 号沉淀（溯源勘误 + 重启后排除测试 + 探针工具缺陷修复） (#70)
-fed7a65 research: WSL 缓存预热对照实验——瓶颈定位到 seccomp 通知链（Fixes #72） (#78)
-25e7b36 docs: 沉淀 WSL 升级验证实验（2.9.4 仍复现 + 回滚 MSI 修正，#71/#63） (#79)
-b596a97 feat: Agent 进化强制层——静态检查三件套 + make doctor 环境自检 (#84)
-9ee607b docs: WSL 源码级验证——2.9.5+ 修复已确认存在（#71 最后证明项） (#85)
-3269686 docs: WSL 回环案例独立仓库——文档归一重编号（01-39）+ 归档迁移 + README 名片
-1acb58c chore: 仓库优化——指向修复 + lint/链接门禁 + LICENSE + README badge
-288ebfb chore: 移除投稿内部材料并重编号 docs 01-24
-e5f7f2a chore: 清洗公开内容——本地路径/IP/MAC 泛化、内部过程措辞中性化、移除观察脚本与子集日志包
+ef61042 docs: WSL 31/32 号沉淀（溯源勘误 + 重启后排除测试 + 探针工具缺陷修复） (#70)
+10e4891 research: WSL 缓存预热对照实验——瓶颈定位到 seccomp 通知链（Fixes #72） (#78)
+3aa79e6 docs: 沉淀 WSL 升级验证实验（2.9.4 仍复现 + 回滚 MSI 修正，#71/#63） (#79)
+e09e145 feat: Agent 进化强制层——静态检查三件套 + make doctor 环境自检 (#84)
+03fd513 docs: WSL 源码级验证——2.9.5+ 修复已确认存在（#71 最后证明项） (#85)
+01b41f6 docs: WSL 回环案例独立仓库——文档归一重编号（01-39）+ 归档迁移 + README 名片
+557f749 chore: 仓库优化——指向修复 + lint/链接门禁 + LICENSE + README badge
+ba8e353 chore: 移除投稿内部材料并重编号 docs 01-24
+b5eed6b chore: 清洗公开内容——本地路径/IP/MAC 泛化、内部过程措辞中性化、移除观察脚本与子集日志包
+59c22a3 docs: 重生成 commit 索引（对齐重写后历史）
 
 > 迁移说明：源仓库 PR 为 GitHub 平台对象，无法迁移；本索引即迁移后的完整 commit 历史（哈希已重写）。
