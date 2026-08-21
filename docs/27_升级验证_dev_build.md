@@ -89,7 +89,7 @@ WSL 仓库 `git diff 2.9.4..c9f0d36b -- src/linux/init/`：仅 #41051（55d45784
 
 ## 官方回复已发送（2026-08-20 04:51Z）
 
-- 评论：https://github.com/microsoft/WSL/issues/41383#issuecomment-5351512967（用户 3900563672）
+- 评论：`https://github.com/microsoft/WSL/issues/41383#issuecomment-5351512967`（用户 3900563672）
 - 内容：dev build 验证结果表（8/8、40/40、~1ms、Windows 侧 8/8、中继错误 0）+ 修复确认 + 2.9.5+ Store 复测承诺 + 一句话性能预告（listen 同步 seccomp 往返，正式版复测后分享数字）。
 - 流程：桌面草稿 → 预演 issue（#104，已关闭）→ 正式发送 → 回读校验一致。
 - 下一步：等官方回应；Store 正式版 2.9.5+ 推送后复测（对照 dev build，含性能税数据）。
