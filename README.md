@@ -99,3 +99,9 @@ go run .
 - 大体积原始证据（ETL 抓包、WPR 日志）不入 git，清单见 `evidence/manifest.md`。
 - 迁移自早期研究工作区的完整 commit 历史见 `archive/prs/commit-index.md`。
 - 文档编号全局唯一（`docs/` 01–32），主题分段见上文；`archive/` 为过程归档不参与主编号。
+## 🤖 AI 协作说明
+
+本研究全程在 AI 辅助下推进——复现设计、源码分析与证据整理均有 AI 参与。所有结论均经过**人工复核与可复现实验验证**（本仓库即完整证据链）：AI 是协作者，人对结论负责。
+
+AI×Human 协作研究与实践见 [我的主页](https://github.com/3900563672)。
+
